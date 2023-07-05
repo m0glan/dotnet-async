@@ -40,7 +40,7 @@ namespace Demo.Async.SynchronizationContext.Wpf
             CurrentThreadId = GetCurrentThreadId();
             IsLoading = true;
 
-            await DelayAndReturnMilliseconds(continueOnCapturedContext: false).ConfigureAwait(continueOnCapturedContext: false);
+            await Delay(continueOnCapturedContext: false).ConfigureAwait(continueOnCapturedContext: false);
 
             CurrentThreadId = GetCurrentThreadId();
             IsLoading = false;
@@ -53,7 +53,7 @@ namespace Demo.Async.SynchronizationContext.Wpf
             CurrentThreadId = GetCurrentThreadId();
             IsLoading = true;
 
-            await DelayAndReturnMilliseconds(continueOnCapturedContext: true);
+            await Delay(continueOnCapturedContext: true);
 
             CurrentThreadId = GetCurrentThreadId();
             IsLoading = false;
@@ -66,7 +66,7 @@ namespace Demo.Async.SynchronizationContext.Wpf
             CurrentThreadId = GetCurrentThreadId();
             IsLoading = true;
 
-            var _ = DelayAndReturnMilliseconds(continueOnCapturedContext: true).Result;
+            Delay(continueOnCapturedContext: true).Wait();
 
             CurrentThreadId = GetCurrentThreadId();
             IsLoading = false;
@@ -79,7 +79,7 @@ namespace Demo.Async.SynchronizationContext.Wpf
             CurrentThreadId = GetCurrentThreadId();
             IsLoading = true;
 
-            var _ = DelayAndReturnMilliseconds(continueOnCapturedContext: false).Result;
+            Delay(continueOnCapturedContext: false).Wait();
 
             CurrentThreadId = GetCurrentThreadId();
             IsLoading = false;
@@ -95,7 +95,7 @@ namespace Demo.Async.SynchronizationContext.Wpf
             var thirdPartyFunction = () =>
             {
                 // Cannot change, not our function...
-                return DelayAndReturnMilliseconds(continueOnCapturedContext: true);
+                return Delay(continueOnCapturedContext: true);
             };
 
             var ourFunction = async () =>
@@ -127,11 +127,10 @@ namespace Demo.Async.SynchronizationContext.Wpf
 
         private static string GetCurrentThreadId() => Environment.CurrentManagedThreadId.ToString();
 
-        private static async Task<int> DelayAndReturnMilliseconds(bool continueOnCapturedContext = true)
+        private static async Task Delay(bool continueOnCapturedContext = true)
         {
             var span = TimeSpan.FromSeconds(3);
             await Task.Delay(TimeSpan.FromSeconds(3)).ConfigureAwait(continueOnCapturedContext);
-            return (int)span.TotalMilliseconds;
         }
     }
 }
