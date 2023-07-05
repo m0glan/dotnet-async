@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Demo.Async.SynchronizationContext.Wpf"
         xmlns:li="http://github.com/zeluisping/loadingIndicators/xaml/controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="1000">
+        Title="MainWindow" Height="450" Width="1200">
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
@@ -37,6 +37,11 @@
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button
+                Command="{Binding UpdateTextBoxInDifferentThreadCommand}" 
+                Content="Update text box (different thread)"
+                Padding="10,5,10,5"
+                Margin="5,10"/>
             <Button
                 Command="{Binding ExecuteAsyncCrossContextCommand}" 
                 Content="Execute async (cross context)"
