@@ -10,7 +10,7 @@ public static class Program
 
         while (next is not ProgramStates.Quit)
         {
-            ClearPage();
+            NewPage();
 
             next = next switch
             {
@@ -23,7 +23,7 @@ public static class Program
         }
     }
 
-    private static void ClearPage()
+    private static void NewPage()
     {
         AnsiConsole.Clear();
         AnsiConsole.MarkupLine("[purple bold]Task Completion Source Demo[/]");
