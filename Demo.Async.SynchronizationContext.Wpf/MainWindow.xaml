@@ -1,0 +1,70 @@
+﻿<Window x:Class="Demo.Async.SynchronizationContext.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Demo.Async.SynchronizationContext.Wpf"
+        xmlns:li="http://github.com/zeluisping/loadingIndicators/xaml/controls"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="1000">
+    <Window.DataContext>
+        <local:MainWindowViewModel />
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <li:LoadingIndicator Grid.Row="0" IsActive="{Binding IsLoading}" />
+
+        <Grid Grid.Row="0" Width="412" HorizontalAlignment="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            
+            <Label Grid.Row="0" Grid.Column="0" Content="Current thread ID: " />
+            <Label Grid.Row="0" Grid.Column="1" Content="{Binding CurrentThreadId}" />
+
+            <Label Grid.Row="1" Grid.Column="0" Content="Textbox to update: " Margin="0,0,2,0" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="textBox" Width="200" Height="75" TextWrapping="Wrap" />
+        </Grid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button
+                Command="{Binding ExecuteAsyncCrossContextCommand}" 
+                Content="Execute async (cross context)"
+                Padding="10,5,10,5"
+                Margin="5,10"/>
+            <Button
+                Command="{Binding ExecuteAsyncContextAwareCommand}" 
+                Content="Execute async (context aware)"
+                Padding="10,5,10,5"
+                Margin="5,10"/>
+            <Button
+                Command="{Binding BlockOnAsyncWithDeadlockCommand}" 
+                Content="Block on async (deadlock)"
+                Padding="10,5,10,5"
+                Margin="5,10"/>
+
+            <Button
+                Command="{Binding BlockOnAsyncWithoutDeadlockCommand}" 
+                Content="Block on async (no deadlock)"
+                Padding="10,5,10,5"
+                Margin="5,10"/>
+
+            <Button
+                Command="{Binding BlockOnAsyncWithDeadlockAndContinueOnCapturedContextFalseCommand}" 
+                Content="Block on async (deadlock)"
+                Padding="10,5,10,5"
+                Margin="5,10"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

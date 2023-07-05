@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Demo.Async.UI
+namespace Demo.Async.SynchronizationContext.Wpf
 {
     /// <summary>
     /// Interaction logic for App.xaml
