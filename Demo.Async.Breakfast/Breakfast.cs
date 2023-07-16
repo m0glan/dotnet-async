@@ -32,7 +32,9 @@ public class Breakfast
     /// <returns>
     ///     A partially asynchronously cooked <see cref="Breakfast"/>
     /// </returns>
-    /// <exception cref="IncompleteBreakfastException"></exception>
+    /// <exception cref="IncompleteBreakfastException">
+    ///     When the breakfast cooking task is cancelled.
+    /// </exception>
     public static async Task<Breakfast> CookDefaultAsync(int eggCount = 2, int toastCount = 2, CancellationToken ct = default)
     {
         try
