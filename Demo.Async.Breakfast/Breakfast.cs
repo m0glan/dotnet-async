@@ -24,6 +24,15 @@ public class Breakfast
         Parts = parts ?? Enumerable.Empty<BreakfastPart>();
     }
 
+    /// <remarks>
+    ///     Warning: This method cooks a breakfast partially asynchronously. In a real UI application this is
+    ///     not a good thing, since parts of this method would block the UI; to unblock the UI during
+    ///     the synchronous/CPU-bound parts, one would usually use something like <see cref="Task.Run(Action)"/>.
+    /// </remarks>
+    /// <returns>
+    ///     A partially asynchronously cooked <see cref="Breakfast"/>
+    /// </returns>
+    /// <exception cref="IncompleteBreakfastException"></exception>
     public static async Task<Breakfast> CookDefaultAsync(int eggCount = 2, int toastCount = 2, CancellationToken ct = default)
     {
         try
@@ -31,20 +40,20 @@ public class Breakfast
             var breakfastParts = new List<BreakfastPart>();
 
             Task<IEnumerable<BreakfastPart>> fryEggsTask = FryEggsAsync(eggCount, ct);
-            Task<IEnumerable<BreakfastPart>> makeToastTask = MakeToastAsync(toastCount, ct);
+            Task<IEnumerable<BreakfastPart>> makeToastsTask = MakeToastsAsync(toastCount, ct);
 
             ThrowIfCancelled(ct);
 
-            BreakfastPart juiceGlass = PourJuice();
+            BreakfastPart juiceGlass = PourJuice().Result;
             breakfastParts.Add(juiceGlass);
 
             ThrowIfCancelled(ct);
 
-            IEnumerable<BreakfastPart> toasts = await makeToastTask;
+            IEnumerable<BreakfastPart> toasts = await makeToastsTask;
 
             ThrowIfCancelled(ct);
 
-            IEnumerable<BreakfastPart> toastsWithSpread = toasts.Select(ApplySpreadToToast);
+            IEnumerable<BreakfastPart> toastsWithSpread = ApplySpreadToToasts(toasts);
             breakfastParts.AddRange(toastsWithSpread);
 
             ThrowIfCancelled(ct);
@@ -64,27 +73,27 @@ public class Breakfast
 
     private static async Task<IEnumerable<BreakfastPart>> FryEggsAsync(int eggCount, CancellationToken cts = default)
     {
-        AnsiConsole.MarkupLine("Started frying [orange4_1]eggs[/] [green]asynchronously[/]...");
+        AnsiConsole.MarkupLine($"Started frying [orange4_1]{eggCount} egg(s)[/] [green]asynchronously[/]...");
 
         await Task.Delay(TimeSpan.FromSeconds(15), cts);
 
-        AnsiConsole.MarkupLine("Done frying [orange4_1]eggs[/] [green]asynchronously[/].");
+        AnsiConsole.MarkupLine($"Done frying [orange4_1]{eggCount} egg(s)[/] [green]asynchronously[/].");
 
         return Enumerable.Range(0, eggCount).Select(e => BreakfastPart.FriedEgg);
     }
 
-    private static async Task<IEnumerable<BreakfastPart>> MakeToastAsync(int toastCount, CancellationToken cts = default)
+    private static async Task<IEnumerable<BreakfastPart>> MakeToastsAsync(int toastCount, CancellationToken cts = default)
     {
-        AnsiConsole.MarkupLine("Started making [orange4_1]toast[/] [green]asynchronously[/]...");
+        AnsiConsole.MarkupLine($"Started making [orange4_1]{toastCount} toast(s)[/] [green]asynchronously[/]...");
 
         await Task.Delay(TimeSpan.FromSeconds(5), cts);
 
-        AnsiConsole.MarkupLine("Done making [orange4_1]toast[/] [green]asynchronously[/].");
+        AnsiConsole.MarkupLine($"Done making [orange4_1]{toastCount} toast(s)[/] [green]asynchronously[/].");
 
         return Enumerable.Range(0, toastCount).Select(e => BreakfastPart.Toast);
     }
 
-    private static BreakfastPart PourJuice()
+    private static Task<BreakfastPart> PourJuice()
     {
         AnsiConsole.MarkupLine("Started pouring [orange4_1]juice[/] [red]synchronously[/]...");
 
@@ -92,18 +101,26 @@ public class Breakfast
 
         AnsiConsole.MarkupLine("Done pouring [orange4_1]juice[/] [red]synchronously[/].");
 
-        return BreakfastPart.JuiceGlass;
+        return Task.FromResult(BreakfastPart.JuiceGlass);
     }
 
-    private static BreakfastPart ApplySpreadToToast(BreakfastPart _)
+    private static IEnumerable<BreakfastPart> ApplySpreadToToasts(IEnumerable<BreakfastPart> toasts)
     {
-        AnsiConsole.MarkupLine("Started applying spread to [orange4_1]toast[/] [red]synchronously[/]...");
+        if (toasts.Any(t => t is not BreakfastPart.Toast))
+        {
+            throw new InvalidOperationException("Can only apply spread to toasts.");
+        }
 
-        Thread.Sleep(TimeSpan.FromSeconds(3));
+        return toasts.Select((t, i) =>
+        {
+            AnsiConsole.MarkupLine($"Started applying spread to [orange4_1]toast #{i + 1}[/] [red]synchronously[/]...");
 
-        AnsiConsole.MarkupLine("Done applying spread to [orange4_1]toast[/] [red]synchronously[/].");
+            Thread.Sleep(TimeSpan.FromSeconds(3));
 
-        return BreakfastPart.ToastWithSpread;
+            AnsiConsole.MarkupLine($"Done applying spread to [orange4_1]toast #{i + 1}[/] [red]synchronously[/].");
+
+            return BreakfastPart.ToastWithSpread;
+        });
     }
 
     private static void ThrowIfCancelled(CancellationToken ct)
