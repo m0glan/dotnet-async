@@ -73,22 +73,22 @@ public class Breakfast
         }
     }
 
-    private static async Task<IEnumerable<BreakfastPart>> FryEggsAsync(int eggCount, CancellationToken cts = default)
+    private static async Task<IEnumerable<BreakfastPart>> FryEggsAsync(int eggCount, CancellationToken ct = default)
     {
         AnsiConsole.MarkupLine($"Started frying [orange4_1]{eggCount} egg(s)[/] [green]asynchronously[/]...");
 
-        await Task.Delay(TimeSpan.FromSeconds(15), cts);
+        await Task.Delay(TimeSpan.FromSeconds(15), ct);
 
         AnsiConsole.MarkupLine($"Done frying [orange4_1]{eggCount} egg(s)[/] [green]asynchronously[/].");
 
         return Enumerable.Range(0, eggCount).Select(e => BreakfastPart.FriedEgg);
     }
 
-    private static async Task<IEnumerable<BreakfastPart>> MakeToastsAsync(int toastCount, CancellationToken cts = default)
+    private static async Task<IEnumerable<BreakfastPart>> MakeToastsAsync(int toastCount, CancellationToken ct = default)
     {
         AnsiConsole.MarkupLine($"Started making [orange4_1]{toastCount} toast(s)[/] [green]asynchronously[/]...");
 
-        await Task.Delay(TimeSpan.FromSeconds(5), cts);
+        await Task.Delay(TimeSpan.FromSeconds(5), ct);
 
         AnsiConsole.MarkupLine($"Done making [orange4_1]{toastCount} toast(s)[/] [green]asynchronously[/].");
 
